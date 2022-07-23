@@ -1,67 +1,10 @@
 module DayNine where
 
-import Data.Map (Map)
-import Data.List (sort, transpose)
+import Data.List (sort)
 import Data.Char (digitToInt)
-import Control.Monad (mapM)
-import qualified Data.Ix as Ix
+import Data.Bifunctor (bimap)
 import qualified Data.Array as A
-import qualified Data.Set as Set
-import qualified Data.Map as M
 import qualified Utils as U
-import qualified Data.List.Split as S
-import qualified Control.Monad as CM
-
-
-chunk1d :: Int -> [a] -> [[a]]
-chunk1d _ [] = []
-chunk1d winSize xss@(x:xs)
-  | length win == winSize = win : chunk1d winSize xs
-  | otherwise = []
-  where win = take winSize xss
-
-
-chunk2d :: (Int, Int) -> [[a]] -> [[[[a]]]]
-chunk2d (w, h) xs = twoChunks
-  where oneChunks = map (chunk1d  w) xs
-        twoChunks = map (chunk1d h) .transpose $ oneChunks
-
-
-
-pad1d :: a -> [a] -> [a]
-pad1d x xs = x : p xs
-  where p [] = [x]
-        p (s:ss) = s : p ss
-
-pad2d :: a -> [[a]] -> [[a]]
-pad2d x = transpose . map (pad1d x) . transpose . map (pad1d x)
-
-
-sum2d :: Num a => [[a]] -> a
-sum2d = sum . map sum
-
-map2d :: (a -> b) -> [[a]] -> [[b]]
-map2d f = map $ map f
-
-
-selectValeys :: (Ord a, Num a) => [[[[a]]]] -> Maybe [[a]]
-selectValeys xs = mapM (mapM f) xs
-  where f ( (_  :x01:_)
-           :(x10:x11:x12:_)
-           :(_  :x21:_):_) = if all (> x11) [x01, x10, x12, x21]
-                                then Just (x11 + 1)
-                                else Just 0
-        f _ = Nothing
-        partia = map (map f) xs
-
-
-partOne :: [[Char]] -> Maybe Int
-partOne xs = do
-  let digits = map2d digitToInt xs
-      paddedDigits = pad2d 10 digits
-      chunkedDigits = chunk2d (3, 3) paddedDigits
-  valeys <- selectValeys chunkedDigits
-  Just $ sum2d valeys
 
 
 mapp = [ "2199943210"
@@ -71,27 +14,22 @@ mapp = [ "2199943210"
        , "9899965678"
        ]
 
-atIxds :: A.Array (Int, Int) Int -> [(Int, Int)] -> [Int]
-atIxds arr idxs = [arr A.! coord | coord <- idxs]
-
-
-enumerate :: [a] -> [(Int, a)]
-enumerate = zip [0..]
-
 
 bazinLineToArray :: [String] -> A.Array (Int, Int) Int
 bazinLineToArray xss = A.array idx elements
   where idx = ((0, 0), (length xss - 1, length (head xss) - 1))
         elements = [((i, j), digitToInt x)
-          | (i, xs) <- enumerate xss, (j, x) <- enumerate xs]
+          | (i, xs) <- U.enumerate xss, (j, x) <- U.enumerate xs]
 
 
-findSmokeBasin :: A.Array (Int, Int) Int -> [Maybe (Int, Int)]
-findSmokeBasin arr = filter (/= Nothing) [f (y, x) | y <- [0..h] , x <- [0..w]]
-  where (_, (h, w)) = A.bounds arr
-        inBounds (y, x) = 0 <= x && x <= w  && 0 <= y && y <= h
+inBounds :: (U.Coord, U.Coord) -> U.Coord -> Bool
+inBounds ((sh, sw), (eh, ew)) (y, x) = sw <= x && x <= ew  && sh <= y && y <= eh
+
+findSmokeBasin :: A.Array (Int, Int) Int -> Maybe [(Int, Int)]
+findSmokeBasin arr = sequence $ filter (/= Nothing) [f (y, x) | y <- [0..h] , x <- [0..w]]
+  where bounds@(_, (h, w)) = A.bounds arr
         getIfInBounds coord
-          | inBounds coord = Just $ arr A.! coord
+          | inBounds bounds coord = Just $ arr A.! coord
           | otherwise = Nothing
 
         f (y, x) = if all (> center) neighbours
@@ -104,21 +42,58 @@ findSmokeBasin arr = filter (/= Nothing) [f (y, x) | y <- [0..h] , x <- [0..w]]
                 neighbours = filter (/= Nothing) [down, up, left, right]
                 center = getIfInBounds (y, x)
 
+
+computeNeighbCoords :: (Int, Int) -> [(Int, Int)]
+computeNeighbCoords (y, x) = map (bimap (+y) (+x)) [(-1, 0), (0, 1), (1, 0), (0, -1)]
+
+getNeighbours :: (Int, Int) -> A.Array (Int, Int) a -> [(Int, Int)]
+getNeighbours coord@(y, x) arr = filter (inBounds bounds) . computeNeighbCoords $ coord
+  where bounds = A.bounds arr
+
+
+extractBasins :: [(Int, Int)] -> A.Array (Int, Int) Int -> A.Array (Int, Int) Bool -> [[(Int, Int)]]
+extractBasins [] _ _ = []
+extractBasins (s:ss) mapp visitedMask = basinSize : extractBasins ss mapp visitedMask'
+  where (basinSize, visitedMask') = extractBasin [s] (visitedMask A.// [(s, True)])
+        extractBasin [] visitedMask = ([], visitedMask)
+        extractBasin (x:xs) visitedMask =  (x: num , visitedMask)
+          where neighCoords = getNeighbours x mapp
+                currValue = mapp A.! x
+                notVisited = map not $ U.atIxds visitedMask neighCoords
+                neighValues = U.atIxds mapp neighCoords
+                inBasinValues = map (\v -> v < 9 && v > currValue) neighValues
+                ok = zipWith (&&) inBasinValues notVisited
+                oks = filter snd (zip neighCoords ok)
+                newCoords = map fst oks
+                (num, visitedMask') = extractBasin (xs++newCoords) (visitedMask A.// zip newCoords (repeat True))
+
+
 partOne' :: [String] -> Maybe Int
 partOne' strBasins = do
-  basins <- sequence smokeBasins
-  return $ sum . map (+1) . atIxds mapp $ basins
+  basins <- smokeBasins
+  return $ sum . map (+1) . U.atIxds mapp $ basins
   where mapp = bazinLineToArray strBasins
         smokeBasins = findSmokeBasin mapp
+
+
+partTwo :: [String] -> Maybe Int
+partTwo strBasins = do
+  bazins <- smokeBasins
+  return $ product . take 3 . reverse . sort . map length $ extractBasins bazins mapp visitedMask
+  where mapp = bazinLineToArray strBasins
+        ((h0, w0), (h, w)) = A.bounds mapp
+        visitedMask = A.listArray (A.bounds mapp) $ replicate ((w-w0+1)*(h-h0+1)) False
+        smokeBasins = findSmokeBasin mapp
+
 
 
 
 main :: IO ()
 main = do
   lines <- U.readLines "resources/day_9.txt"
-  print $ partOne mapp
-  print $ partOne lines
   print $ partOne' mapp
   print $ partOne' lines
+  print $ partTwo mapp
+  print $ partTwo lines
   -- print $ bazinLineToArray lines
 
