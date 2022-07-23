@@ -15,21 +15,20 @@ mapp = [ "2199943210"
        ]
 
 
-bazinLineToArray :: [String] -> A.Array (Int, Int) Int
+bazinLineToArray :: [String]
+                 -> A.Array (Int, Int) Int
 bazinLineToArray xss = A.array idx elements
   where idx = ((0, 0), (length xss - 1, length (head xss) - 1))
         elements = [((i, j), digitToInt x)
           | (i, xs) <- U.enumerate xss, (j, x) <- U.enumerate xs]
 
 
-inBounds :: (U.Coord, U.Coord) -> U.Coord -> Bool
-inBounds ((sh, sw), (eh, ew)) (y, x) = sw <= x && x <= ew  && sh <= y && y <= eh
-
-findSmokeBasin :: A.Array (Int, Int) Int -> Maybe [(Int, Int)]
+findSmokeBasin :: A.Array (Int, Int) Int
+               -> Maybe [(Int, Int)]
 findSmokeBasin arr = sequence $ filter (/= Nothing) [f (y, x) | y <- [0..h] , x <- [0..w]]
   where bounds@(_, (h, w)) = A.bounds arr
         getIfInBounds coord
-          | inBounds bounds coord = Just $ arr A.! coord
+          | U.inBounds bounds coord = Just $ arr A.! coord
           | otherwise = Nothing
 
         f (y, x) = if all (> center) neighbours
@@ -43,15 +42,22 @@ findSmokeBasin arr = sequence $ filter (/= Nothing) [f (y, x) | y <- [0..h] , x 
                 center = getIfInBounds (y, x)
 
 
-computeNeighbCoords :: (Int, Int) -> [(Int, Int)]
+computeNeighbCoords :: (Int, Int)
+                    -> [(Int, Int)]
 computeNeighbCoords (y, x) = map (bimap (+y) (+x)) [(-1, 0), (0, 1), (1, 0), (0, -1)]
 
-getNeighbours :: (Int, Int) -> A.Array (Int, Int) a -> [(Int, Int)]
-getNeighbours coord@(y, x) arr = filter (inBounds bounds) . computeNeighbCoords $ coord
+
+getNeighbours :: (Int, Int)
+              -> A.Array (Int, Int) a
+              -> [(Int, Int)]
+getNeighbours coord@(y, x) arr = filter (U.inBounds bounds) . computeNeighbCoords $ coord
   where bounds = A.bounds arr
 
 
-extractBasins :: [(Int, Int)] -> A.Array (Int, Int) Int -> A.Array (Int, Int) Bool -> [[(Int, Int)]]
+extractBasins :: [(Int, Int)]
+              -> A.Array (Int, Int) Int
+              -> A.Array (Int, Int) Bool
+              -> [[(Int, Int)]]
 extractBasins [] _ _ = []
 extractBasins (s:ss) mapp visitedMask = basinSize : extractBasins ss mapp visitedMask'
   where (basinSize, visitedMask') = extractBasin [s] (visitedMask A.// [(s, True)])
@@ -68,7 +74,8 @@ extractBasins (s:ss) mapp visitedMask = basinSize : extractBasins ss mapp visite
                 (num, visitedMask') = extractBasin (xs++newCoords) (visitedMask A.// zip newCoords (repeat True))
 
 
-partOne' :: [String] -> Maybe Int
+partOne' :: [String]
+         -> Maybe Int
 partOne' strBasins = do
   basins <- smokeBasins
   return $ sum . map (+1) . U.atIxds mapp $ basins
@@ -76,7 +83,8 @@ partOne' strBasins = do
         smokeBasins = findSmokeBasin mapp
 
 
-partTwo :: [String] -> Maybe Int
+partTwo :: [String]
+        -> Maybe Int
 partTwo strBasins = do
   bazins <- smokeBasins
   return $ product . take 3 . reverse . sort . map length $ extractBasins bazins mapp visitedMask
@@ -84,8 +92,6 @@ partTwo strBasins = do
         ((h0, w0), (h, w)) = A.bounds mapp
         visitedMask = A.listArray (A.bounds mapp) $ replicate ((w-w0+1)*(h-h0+1)) False
         smokeBasins = findSmokeBasin mapp
-
-
 
 
 main :: IO ()
