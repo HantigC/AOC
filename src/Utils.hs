@@ -8,6 +8,12 @@ import qualified Data.Array as A
 
 type Coord = (Int, Int)
 
+inBounds :: (Coord, Coord)
+         -> Coord
+         -> Bool
+inBounds ((sh, sw), (eh, ew)) (y, x) = sw <= x && x <= ew  && sh <= y && y <= eh
+
+
 readLines :: FilePath -> IO [String]
 readLines = fmap lines . readFile
 
