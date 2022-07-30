@@ -8,13 +8,13 @@ import Data.List (sort)
 
 type TextList = [String]
 
-
 data EnergyLevel = Level Int
                  | Flashed deriving (Show, Eq, Ord)
 
 type Grid a = A.Array U.Coord a
 
 type EnergyGrid = Grid EnergyLevel
+
 
 energyLevels = [ "5483143223"
                , "2745854711"
@@ -28,6 +28,7 @@ energyLevels = [ "5483143223"
                , "5283751526"
                ]
 
+
 smallEnergyLevels = [ "11111"
                     , "19991"
                     , "19191"
@@ -36,38 +37,38 @@ smallEnergyLevels = [ "11111"
                     ]
 
 
-textListToArray :: (Char -> a)
-                -> TextList
-                -> Grid a
+textListToArray :: (Char -> a) -> TextList -> Grid a
 textListToArray f xss = A.listArray idx [f x | xs <- xss, x <- xs]
   where idx = ((0, 0), (length xss - 1, length (head xss) - 1))
 
 
-partOne :: Int -> TextList -> Int
-partOne num strs = snd $ fillSteps num energyLevels
-  where energyLevels = textListToArray f strs
-        ((sh, sw), (eh, ew)) = A.bounds energyLevels
-        f x = Level $ digitToInt x
+computeFlashNumber :: Int -> EnergyGrid ->  Int
+computeFlashNumber num grid = snd $ foldl f (grid, 0) [1..num]
+  where f (grid, flashes) _ = (A.amap f grid', flashes + flashes')
+          where grid' = fillOneStep grid
+                flashes' = foldl f' 0 grid'
+
+                f' x Flashed = x + 1
+                f' x _ = x
+
+                f Flashed =  Level 0
+                f x = x
 
 
-fillSteps :: Int -> EnergyGrid -> (EnergyGrid, Int)
-fillSteps num grid = foldl f (grid, 0) [1..num]
-  where f (grid, flashes) _ = (grid', flashes + flashes')
-          where (grid', flashes') = fillOneStep grid
+getFullFlashes :: EnergyGrid -> Int
+getFullFlashes = getFullFlashes' 0
+  where getFullFlashes' num grid =
+          if allFlashed
+             then currFlash
+             else getFullFlashes' currFlash $ A.amap f grid'
 
-fillOneStep :: EnergyGrid -> (EnergyGrid, Int)
-fillOneStep energyLevels = (A.amap f energyLevels', flashes)
-  where ((sh, sw), (eh, ew)) = A.bounds energyLevels
-        s = [(i, j) | i <- [sh..eh], j <- [sw..ew]]
+          where grid' = fillOneStep grid
+                allFlashed = all (==Flashed) grid'
+                currFlash = num + 1
 
-        energyLevels' = bfs energyLevels s
-        flashes = foldl f' 0 energyLevels'
+                f Flashed = Level 0
+                f x = x
 
-        f' x Flashed = x + 1
-        f' x _ = x
-
-        f Flashed = f $ Level 0
-        f x = x
 
 bfs :: EnergyGrid -> [U.Coord] -> EnergyGrid
 bfs grid []  = grid
@@ -81,8 +82,30 @@ bfs grid (coord@(y, x) : coords) = f el
         f Flashed = bfs grid coords
 
 
+fillOneStep :: EnergyGrid -> EnergyGrid
+fillOneStep energyLevels = energyLevels'
+  where ((sh, sw), (eh, ew)) = A.bounds energyLevels
+        s = [(i, j) | i <- [sh..eh], j <- [sw..ew]]
+        energyLevels' = bfs energyLevels s
+
+
+
+
+partOne :: Int -> TextList -> Int
+partOne num strs = computeFlashNumber num energyLevels
+  where energyLevels = textListToArray f strs
+        ((sh, sw), (eh, ew)) = A.bounds energyLevels
+        f x = Level $ digitToInt x
+
+
+partTwo :: TextList -> Int
+partTwo strs = getFullFlashes $ textListToArray (Level .  digitToInt)  strs
+
+
 main :: IO ()
 main = do
   lines <- U.readLines "resources/day_11.txt"
   print $ partOne 100 energyLevels
   print $ partOne 100 lines
+  print $ partTwo energyLevels
+  print $ partTwo lines
