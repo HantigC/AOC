@@ -4,9 +4,11 @@ import Data.Map (Map)
 import qualified Data.Map as M
 import Data.List.Split as S
 import qualified Data.Array as A
+import Data.Bifunctor (bimap)
 
 
 type Coord = (Int, Int)
+type GridBounds = ((Int, Int), (Int, Int))
 
 inBounds :: (Coord, Coord)
          -> Coord
@@ -30,3 +32,48 @@ atIxds arr idxs = [arr A.! coord | coord <- idxs]
 
 enumerate :: [a] -> [(Int, a)]
 enumerate = zip [0..]
+
+crossPattern :: [Coord]
+crossPattern = [ {-(-1, -1)-}  (-1, 0)   {-(-1, 1)-}
+                , ( 0, -1), {-(0, 0)-}  ( 0, 1)
+                , {-( 1, -1)-}  ( 1, 0)   {-( 1, 1)-}]
+
+
+squarePattern :: [Coord]
+squarePattern = [ (-1, -1),  (-1, 0),   (-1, 1)
+                , ( 0, -1), {-(0, 0)-}  ( 0, 1)
+                , ( 1, -1),  ( 1, 0),   ( 1, 1)]
+
+computeNeighbCoords :: [Coord]
+                    -> Coord
+                    -> [Coord]
+computeNeighbCoords pattern (y, x) = map (bimap (+y) (+x)) pattern
+
+
+
+computeCrossNeighbCoords :: Coord -> [Coord]
+computeCrossNeighbCoords = computeNeighbCoords crossPattern
+
+
+computeSquareNeighbCoords :: Coord -> [Coord]
+computeSquareNeighbCoords = computeNeighbCoords squarePattern
+
+getNeighbours :: [Coord]
+              -> Coord
+              -> A.Array Coord a
+              -> [Coord]
+getNeighbours pattern coord@(y, x) arr = filter (inBounds bounds)
+                                       . computeNeighbCoords pattern
+                                       $ coord
+  where bounds = A.bounds arr
+
+getCrossNeighbCoords :: Coord
+                     -> A.Array Coord a
+                     -> [Coord]
+getCrossNeighbCoords = getNeighbours crossPattern
+
+
+getSquareNeighbCoords :: Coord
+                     -> A.Array Coord a
+                     -> [Coord]
+getSquareNeighbCoords = getNeighbours squarePattern
