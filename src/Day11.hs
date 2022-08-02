@@ -85,14 +85,11 @@ bfs grid (coord@(y, x) : coords) = f el
 fillOneStep :: EnergyGrid -> EnergyGrid
 fillOneStep energyLevels = energyLevels'
   where ((sh, sw), (eh, ew)) = A.bounds energyLevels
-        s = [(i, j) | i <- [sh..eh], j <- [sw..ew]]
-        energyLevels' = bfs energyLevels s
+        energyLevels' = bfs energyLevels [(i, j) | i <- [sh..eh], j <- [sw..ew]]
 
 
-
-
-partOne :: Int -> TextList -> Int
-partOne num strs = computeFlashNumber num energyLevels
+partOne :: TextList -> Int
+partOne strs = computeFlashNumber 100 energyLevels
   where energyLevels = textListToArray f strs
         ((sh, sw), (eh, ew)) = A.bounds energyLevels
         f x = Level $ digitToInt x
@@ -105,7 +102,7 @@ partTwo strs = getFullFlashes $ textListToArray (Level .  digitToInt)  strs
 main :: IO ()
 main = do
   lines <- U.readLines "resources/day_11.txt"
-  print $ partOne 100 energyLevels
-  print $ partOne 100 lines
+  print $ partOne energyLevels
+  print $ partOne lines
   print $ partTwo energyLevels
   print $ partTwo lines
