@@ -5,6 +5,7 @@ import qualified Data.List.Split as S
 import Control.Monad (mapM, foldM)
 import qualified Data.Array.IArray as A
 import Data.List (sort)
+import qualified Data.Set as ST
 
 
 graph = [ "start-A"
@@ -63,6 +64,7 @@ makeGraph = foldl insertBothWays M.empty . map parseEdge
   where insertBothWays m (fromNode, toNode) = M.insertWith (++) toNode [fromNode] m'
           where m' = M.insertWith (++) fromNode [toNode] m
 
+
 dfs  :: String
      -> M.Map String [String]
      -> [String]
@@ -79,9 +81,28 @@ dfs node graph visitedMap
                 paths = doRecv xs visitedMap
 
 
+dfs'  :: String
+     -> M.Map String [String]
+     -> Bool
+     -> [String]
+     -> [[String]]
+dfs' [] _  was visitedMap = []
+dfs' node graph _ visitedMap | node == "end" = [["end"]]
+dfs' node graph was visitedMap
+  | node == "start" = doRecv  neighburNodes (node:visitedMap) False
+  | all isLower node && was =  doRecv  neighburNodes (node:visitedMap) was
+  | all isLower node && not was = doRecv  neighburNodes visitedMap True ++ doRecv neighburNodes (node:visitedMap) False
+  | otherwise = doRecv  neighburNodes visitedMap was
+  where neighburNodes = filter (not . (`elem` visitedMap)) $ graph M.! node
+        doRecv [] v  _ = []
+        doRecv (x:xs) visitedMap was = map (node:) xss ++ paths
+          where xss = dfs' x graph was visitedMap
+                paths = doRecv xs visitedMap was
+
 partOne :: [String] -> Int
 partOne strs = length $  dfs "start" (makeGraph strs) []
 
+partTwo strs = length $ ST.fromList $ dfs' "start" (makeGraph strs) False []
 
 main :: IO ()
 main = do
@@ -90,4 +111,9 @@ main = do
   print $ partOne graph2
   print $ partOne graph3
   print $ partOne lines
+
+  print $ partTwo graph
+  print $ partTwo graph2
+  print $ partTwo graph3
+  print $ partTwo lines
 
