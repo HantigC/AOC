@@ -94,7 +94,7 @@ partTwo strs = do
 
 main :: IO ()
 main = do
-  lines <- U.readLines "resources/day_10.txt"
+  lines <- U.readLines "../resources/day_10.txt"
   print . partOne $ syntax
   print . partOne $ lines
   print . partTwo $ syntax

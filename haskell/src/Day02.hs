@@ -27,6 +27,6 @@ partTwo xs = h * d
     (h, d, _) = foldl move (0, 0, 0) xs
 
 main = do
-  lines <- readLines "resources/day_2.txt"
+  lines <- readLines "../resources/day_2.txt"
   print . partOne . makeCommands $ lines
   print . partTwo . makeCommands $ lines

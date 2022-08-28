@@ -29,6 +29,6 @@ initialState = ["16,1,2,0,4,2,7,1,2,14"]
 
 main :: IO ()
 main = do
-  s <- U.readLines "resources/day_7.txt"
+  s <- U.readLines "../resources/day_7.txt"
   print $ computeCost sumLoss . U.count . U.getIntList $ s
   print $ computeCost arithmLoss . U.count . U.getIntList $ s

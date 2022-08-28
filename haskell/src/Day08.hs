@@ -119,6 +119,6 @@ partTwo ls = do
 
 main :: IO ()
 main = do
-  lines <- U.readLines "resources/day_8.txt"
+  lines <- U.readLines "../resources/day_8.txt"
   print . partOne $ lines
   print . partTwo $ lines

@@ -96,7 +96,7 @@ partTwo strBasins = do
 
 main :: IO ()
 main = do
-  lines <- U.readLines "resources/day_9.txt"
+  lines <- U.readLines "../resources/day_9.txt"
   print $ partOne' mapp
   print $ partOne' lines
   print $ partTwo mapp

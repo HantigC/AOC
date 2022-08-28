@@ -98,7 +98,7 @@ boards = [ "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26
          , " 2  0 12  3  7"]
 
 main = do
-  lines <- U.readLines "resources/day_4.txt"
+  lines <- U.readLines "../resources/day_4.txt"
   print $ playBingo winOnFirst $ toBingoGame lines
   print $ playBingo winOnLast $ toBingoGame lines
   -- putStrLn $ show $ toBingo $ lines

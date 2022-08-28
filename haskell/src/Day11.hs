@@ -101,7 +101,7 @@ partTwo strs = getFullFlashes $ textListToArray (Level .  digitToInt)  strs
 
 main :: IO ()
 main = do
-  lines <- U.readLines "resources/day_11.txt"
+  lines <- U.readLines "../resources/day_11.txt"
   print $ partOne energyLevels
   print $ partOne lines
   print $ partTwo energyLevels

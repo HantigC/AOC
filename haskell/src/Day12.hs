@@ -74,14 +74,14 @@ dfs node graph visitedMap | node == "end" = [["end"]]
 dfs node graph visitedMap
   | all isLower node =  doRecv  neighburNodes (node:visitedMap)
   | otherwise = doRecv  neighburNodes visitedMap
-  where neighburNodes = filter (not . (`elem` visitedMap)) $ graph M.! node
+  where neighburNodes = filter (not . flip elem visitedMap) $ graph M.! node
         doRecv [] v = []
         doRecv (x:xs) visitedMap = map (node:) xss ++ paths
           where xss = dfs x graph visitedMap
                 paths = doRecv xs visitedMap
 
 
-dfs'  :: String
+dfs' :: String
      -> M.Map String [String]
      -> Bool
      -> [String]
@@ -93,7 +93,7 @@ dfs' node graph was visitedMap
   | all isLower node && was =  doRecv  neighburNodes (node:visitedMap) was
   | all isLower node && not was = doRecv  neighburNodes visitedMap True ++ doRecv neighburNodes (node:visitedMap) False
   | otherwise = doRecv  neighburNodes visitedMap was
-  where neighburNodes = filter (not . (`elem` visitedMap)) $ graph M.! node
+  where neighburNodes = filter (not . flip elem visitedMap) $ graph M.! node
         doRecv [] v  _ = []
         doRecv (x:xs) visitedMap was = map (node:) xss ++ paths
           where xss = dfs' x graph was visitedMap
@@ -106,7 +106,7 @@ partTwo strs = length $ ST.fromList $ dfs' "start" (makeGraph strs) False []
 
 main :: IO ()
 main = do
-  lines <- U.readLines "resources/day_12.txt"
+  lines <- U.readLines "../resources/day_12.txt"
   print $ partOne graph
   print $ partOne graph2
   print $ partOne graph3

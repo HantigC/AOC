@@ -45,7 +45,7 @@ datas = [ "0,9 -> 5,9"
 
 main :: IO ()
 main = do
-  lines <- U.readLines "./resources/day_5.txt"
+  lines <- U.readLines "../resources/day_5.txt"
   print "First"
   print $ play . filter isStraight . map read $ lines
   print "Second"

@@ -19,6 +19,6 @@ initialState = ["3,4,3,1,2"]
 
 main :: IO ()
 main = do
-  initial <- U.readLines "resources/day_6.txt"
+  initial <- U.readLines "../resources/day_6.txt"
   print $ sum . flip grow 256 . cntJelly . U.getIntList $ initial
 

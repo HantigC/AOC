@@ -73,7 +73,7 @@ example = [ "00100"
           ]
 
 main = do
-  bitStr <- U.readLines "resources/day_3.txt"
+  bitStr <- U.readLines "../resources/day_3.txt"
   print $ partOne bitStr
   print $ partTwo bitStr
 
