@@ -1,4 +1,4 @@
-module DayOne where
+module Day01 where
 
 import Utils
 
@@ -14,7 +14,7 @@ conv num xn = snd $ foldl cumConv (take num xn, 0) $ drop num xn
 
 
 main = do
-    lines <- Utils.readLines "../resources/day_1.txt"
+    lines <- Utils.readLines "../resources/Day01.txt"
     print "here"
     print $ conv 1 $ map read lines
     print $ conv 3 $ map read lines

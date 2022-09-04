@@ -1,4 +1,4 @@
-module DayTwo where
+module Day02 where
 import Data.List.Split as S
 
 readLines :: FilePath -> IO [String]
@@ -27,6 +27,6 @@ partTwo xs = h * d
     (h, d, _) = foldl move (0, 0, 0) xs
 
 main = do
-  lines <- readLines "../resources/day_2.txt"
+  lines <- readLines "../resources/Day02.txt"
   print . partOne . makeCommands $ lines
   print . partTwo . makeCommands $ lines

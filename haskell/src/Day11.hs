@@ -1,3 +1,4 @@
+module Day11 where
 import Utils as U
 import qualified Data.Map as M
 import Data.Char (digitToInt)
@@ -101,7 +102,7 @@ partTwo strs = getFullFlashes $ textListToArray (Level .  digitToInt)  strs
 
 main :: IO ()
 main = do
-  lines <- U.readLines "../resources/day_11.txt"
+  lines <- U.readLines "../resources/Day11.txt"
   print $ partOne energyLevels
   print $ partOne lines
   print $ partTwo energyLevels

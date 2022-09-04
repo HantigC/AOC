@@ -1,3 +1,4 @@
+module Day12 where
 import Utils as U
 import qualified Data.Map as M
 import Data.Char (digitToInt, isLower, isUpper)
@@ -105,8 +106,9 @@ partOne strs = length $  dfs "start" (makeGraph strs) []
 partTwo strs = length $ ST.fromList $ dfs' "start" (makeGraph strs) False []
 
 main :: IO ()
+
 main = do
-  lines <- U.readLines "../resources/day_12.txt"
+  lines <- U.readLines "../resources/Day12.txt"
   print $ partOne graph
   print $ partOne graph2
   print $ partOne graph3
@@ -116,4 +118,6 @@ main = do
   print $ partTwo graph2
   print $ partTwo graph3
   print $ partTwo lines
+
+
 

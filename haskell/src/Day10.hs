@@ -1,3 +1,4 @@
+module Day10 where
 import Utils as U
 import qualified Data.Map as M
 import Control.Monad (mapM, foldM)
@@ -94,7 +95,7 @@ partTwo strs = do
 
 main :: IO ()
 main = do
-  lines <- U.readLines "../resources/day_10.txt"
+  lines <- U.readLines "../resources/Day10.txt"
   print . partOne $ syntax
   print . partOne $ lines
   print . partTwo $ syntax

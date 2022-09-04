@@ -1,4 +1,4 @@
-module DayFive where
+module Day05 where
 import qualified Data.List.Split as S
 import qualified Utils as U
 import qualified Data.Map as M
@@ -45,7 +45,7 @@ datas = [ "0,9 -> 5,9"
 
 main :: IO ()
 main = do
-  lines <- U.readLines "../resources/day_5.txt"
+  lines <- U.readLines "../resources/Day05.txt"
   print "First"
   print $ play . filter isStraight . map read $ lines
   print "Second"

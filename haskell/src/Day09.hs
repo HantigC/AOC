@@ -1,4 +1,4 @@
-module DayNine where
+module Day09 where
 
 import Data.List (sort)
 import Data.Char (digitToInt)
@@ -96,7 +96,7 @@ partTwo strBasins = do
 
 main :: IO ()
 main = do
-  lines <- U.readLines "../resources/day_9.txt"
+  lines <- U.readLines "../resources/Day09.txt"
   print $ partOne' mapp
   print $ partOne' lines
   print $ partTwo mapp

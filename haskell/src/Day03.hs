@@ -1,4 +1,4 @@
-module DayThree where
+module Day03 where
 import qualified Utils as U
 
 
@@ -73,7 +73,7 @@ example = [ "00100"
           ]
 
 main = do
-  bitStr <- U.readLines "../resources/day_3.txt"
+  bitStr <- U.readLines "../resources/Day03.txt"
   print $ partOne bitStr
   print $ partTwo bitStr
 
