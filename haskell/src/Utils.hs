@@ -77,3 +77,10 @@ getSquareNeighbCoords :: Coord
                      -> A.Array Coord a
                      -> [Coord]
 getSquareNeighbCoords = getNeighbours squarePattern
+
+
+(==>) :: Monad m => m a -> m b -> m a
+x ==> y = do
+  result <- x
+  y
+  return result

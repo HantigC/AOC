@@ -1,5 +1,6 @@
 module Day13 where
 
+import qualified Utils as U
 import Text.ParserCombinators.Parsec
 import Data.List (nub, intercalate)
 
@@ -56,18 +57,13 @@ parseFold = do
         parseY = string "y=" >> return FoldY
 
 
-(==>) :: Monad m => m a -> m b -> m a
-x ==> y = do
-  result <- x
-  y
-  return result
 
 
 parseTransparentPaper :: GenParser Char st TransparentPaper
 parseTransparentPaper = do
-  coordinates <- many (parseCoords ==> char '\n')
+  coordinates <- many (parseCoords U.==> char '\n')
   char '\n'
-  folds <- many (parseFold ==> char '\n')
+  folds <- many (parseFold U.==> char '\n')
   return (TransparentPaper coordinates folds)
 
 
