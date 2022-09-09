@@ -84,3 +84,10 @@ x ==> y = do
   result <- x
   y
   return result
+
+convolve :: [a] -> Int -> [[a]]
+convolve [] _ = []
+convolve xss@(x:xs) n
+  | length fstN == n = fstN : convolve xs n
+  | otherwise = []
+  where fstN = take n xss
