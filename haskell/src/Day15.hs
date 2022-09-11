@@ -1,7 +1,7 @@
 module Day15 where
 
 import Text.ParserCombinators.Parsec
-import Data.List (nub, intercalate)
+import Data.List (nub, intercalate, transpose)
 import Data.Char (digitToInt)
 import Data.MemoTrie (memo)
 import qualified Data.PQueue.Prio.Min as PQ
@@ -25,12 +25,23 @@ cavernExample = intercalate "\n" [ "1163751742"
                                  ]
 
 
-cavernParser :: GenParser Char st (U.Grid Int)
+cavernParser :: GenParser Char st [[Int]]
 cavernParser = do
   mapp <- many (many digit U.==> char '\n')
-  let h = length mapp
-      w = length $ head mapp
-  return $ A.listArray ((0, 0), (h-1, w-1)) (map digitToInt . concat $ mapp)
+  return $ map (map digitToInt) mapp
+
+
+toArray :: [[Int]] -> A.Array (Int, Int) Int
+toArray mapp = let h = length mapp
+                   w = length $ head mapp
+                in A.listArray ((0, 0), (h-1, w-1)) (concat mapp)
+
+-- duplicateTilesWith :: [[Int]] -> (Int -> Int) -> Int -> Int -> [[Int]]
+duplicateTilesWith x w = concat . f xs
+  where xs = map concat . transpose . f x $ w
+        f xx n = scanl (\acc _ -> map (map (\x -> (if (x+1) `mod` 10 == 0 then 1 else x+1))) acc) xx [2..n]
+
+
 
 
 findLowestRiskPath :: U.Grid Int -> Int
@@ -81,11 +92,19 @@ graphMinDistance grid = f (PQ.singleton 0 (0,0)) M.empty
 
 partOne str = do
   grid <- parse cavernParser "" str
-  return $ findLowestRiskPath grid
+  return $ graphMinDistance $ toArray grid
+
+partTwo str = do
+  grid <- parse cavernParser "" str
+  return $ graphMinDistance $ toArray $ duplicateTilesWith grid 5 5
 
 main = do
   input <- readFile "../resources/Day15.txt"
   print $ partOne cavernExample
   print $ partOne input
+
+
+  print $ partTwo cavernExample
+  print $ partTwo cavernExample
 
 
