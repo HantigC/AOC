@@ -1,5 +1,5 @@
 module Day11 where
-import Utils as U
+import qualified Utils as U
 import qualified Data.Map as M
 import Data.Char (digitToInt)
 import Control.Monad (mapM, foldM)
@@ -12,9 +12,8 @@ type TextList = [String]
 data EnergyLevel = Level Int
                  | Flashed deriving (Show, Eq, Ord)
 
-type Grid a = A.Array U.Coord a
 
-type EnergyGrid = Grid EnergyLevel
+type EnergyGrid = U.Grid EnergyLevel
 
 
 energyLevels = [ "5483143223"
@@ -38,7 +37,7 @@ smallEnergyLevels = [ "11111"
                     ]
 
 
-textListToArray :: (Char -> a) -> TextList -> Grid a
+textListToArray :: (Char -> a) -> TextList -> U.Grid a
 textListToArray f xss = A.listArray idx [f x | xs <- xss, x <- xs]
   where idx = ((0, 0), (length xss - 1, length (head xss) - 1))
 

@@ -3,12 +3,14 @@ module Utils where
 import Data.Map (Map)
 import qualified Data.Map as M
 import Data.List.Split as S
-import qualified Data.Array as A
+import qualified Data.Array.IArray as A
 import Data.Bifunctor (bimap)
 
 
 type Coord = (Int, Int)
 type GridBounds = ((Int, Int), (Int, Int))
+
+type Grid a = A.Array Coord a
 
 inBounds :: (Coord, Coord)
          -> Coord

@@ -25,6 +25,8 @@ dependencies:
 - containers
 - array
 - parsec
+- MemoTrie
+- pqueue
 
 library:
   source-dirs: src
