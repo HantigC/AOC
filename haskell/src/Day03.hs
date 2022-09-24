@@ -12,12 +12,10 @@ toBits :: [Char] -> [Int]
 toBits = map toBit
 
 
-bitToDec :: [Int] -> Int
-bitToDec = fst . foldr (\x (num, cnt) -> (num+x*2^cnt, cnt+1)) (0, 0)
 
 
 bitStrToDec :: [Char] -> Int
-bitStrToDec = bitToDec . toBits
+bitStrToDec = U.binToDec . toBits
 
 
 partition :: (a -> Bool) -> [a] -> ([a], [a])
@@ -41,7 +39,7 @@ partOne xn@(x:xs) = o2 * co2
                         else 0
 
     (cnts, totalCnt) = foldl countBits (take (length x) [0,0..], 0) xn
-    o2 = bitToDec $ map compMajority cnts
+    o2 = U.binToDec $ map compMajority cnts
     co2 = 2 ^ length x - 1 - o2
 
 

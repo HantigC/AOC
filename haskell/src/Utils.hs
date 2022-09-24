@@ -3,6 +3,7 @@ module Utils where
 import Data.Map (Map)
 import qualified Data.Map as M
 import Data.List.Split as S
+import Data.Char (digitToInt)
 import qualified Data.Array.IArray as A
 import Data.Bifunctor (bimap)
 
@@ -93,3 +94,10 @@ convolve xss@(x:xs) n
   | length fstN == n = fstN : convolve xs n
   | otherwise = []
   where fstN = take n xss
+
+
+binToDecStr :: String -> Int
+binToDecStr = fst . foldr ((\x (num, cnt) -> (num+x*2^cnt, cnt+1)) . digitToInt) (0, 0)
+
+binToDec :: [Int] -> Int
+binToDec = fst . foldr (\x (num, cnt) -> (num+x*2^cnt, cnt+1)) (0, 0)
