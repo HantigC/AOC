@@ -1,2 +1,8 @@
+justDoSmth = a ++ b
+  where
+    a = "Aici"
+    b = " s i aci"
+
+
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = print justDoSmth
