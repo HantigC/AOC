@@ -1,11 +1,12 @@
 . .cookie.sh
 
-YEAR=${YEAR:-2021}
+YEAR=${YEAR:-2022}
 DIR=${DIR:-resources}
 URL=https://adventofcode.com/"$YEAR"/day/"$1"/input
-FILENAME="$DIR/$YEAR/Day$1.txt"
+FILENAME=$(printf "%s/%d/Day%02d.txt" $DIR $YEAR $1)
+
 
 echo "URL=$URL"
-echo "FILENAME=$(realpath $FILENAME)"
+echo "FILENAME=$FILENAME"
 
 curl -S -o "$FILENAME" -b "$AOC_COOKIE"  "$URL"

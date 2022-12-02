@@ -9,7 +9,7 @@ toCalories :: [String] -> [[Int]]
 toCalories lines = map (map read) $ splitOn [""] lines
 
 toCaloriesPerElf :: [String] -> [Int]
-toCaloriesPerElf lines = map (sum . map read) $ splitOn [""] lines
+toCaloriesPerElf = map sum . toCalories
 
 partOne :: [String] -> Int
 partOne = maximum . toCaloriesPerElf
