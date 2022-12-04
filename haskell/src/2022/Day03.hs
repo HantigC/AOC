@@ -16,7 +16,7 @@ toPriority c | isUpper c = ord c - ord 'A' + 27
 partOne = sum . map (toPriority . head . uncurry intersect . splitHalf)
 
 partTwo = sum . map (toPriority . head . intersect3) . chunksOf 3
-    where intersect3 [xs, ys, zs] = intersect xs (intersect ys zs)
+    where intersect3 [xs, ys, zs] = xs `intersect` ys `intersect` zs
 
 example =
     [ "vJrwpWtwJgWrhcsFMMfFFhFp"
