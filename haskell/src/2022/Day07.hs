@@ -23,26 +23,31 @@ data FileSystem = File {getFileName :: String, getFileSize :: Int}
                       , getContent :: [FileSystem]
                       }
 
+
+prettyPrint :: FileSystem -> Int -> Int -> [Char]
+prettyPrint cwd spaces stepSize = f cwd 0
+  where
+    f (File filename filesize) spaces =
+        replicate spaces ' '
+            ++ "- "
+            ++ filename
+            ++ " "
+            ++ "("
+            ++ "file, size="
+            ++ show filesize
+            ++ ")"
+            ++ "\n"
+    f (Dir dirname _ contents) spaces =
+        replicate spaces ' '
+            ++ "- "
+            ++ dirname
+            ++ " (dir)"
+            ++ "\n"
+            ++ concatMap (`f` (spaces + stepSize)) contents
+
+
 instance Show FileSystem where
-    show fs = f fs 0
-      where
-        f (File filename filesize) spaces =
-            replicate spaces ' '
-                ++ "- "
-                ++ filename
-                ++ " "
-                ++ "("
-                ++ "file, size="
-                ++ show filesize
-                ++ ")"
-                ++ "\n"
-        f (Dir dirname _ contents) spaces =
-            replicate spaces ' '
-                ++ "- "
-                ++ dirname
-                ++ " (dir)"
-                ++ "\n"
-                ++ concatMap (`f` (spaces + 4)) contents
+    show fs = prettyPrint fs 0 2
 
 fromFileType2FileSystem (FileDescr filename filesize) = File filename filesize
 fromFileType2FileSystem (DirDescr dirname           ) = Dir dirname Nothing []
