@@ -23,43 +23,23 @@ bazinLineToArray xss = A.array idx elements
 
 type HeightMap a = A.Array (Int, Int) a
 
-    -- ((h0, w0), (h, w))
-    -- [ ((x, y), f (x, y)) | x <- [w0 .. w], y <- [h0 .. h] ]
-
 fromLeftUp heightMap =
     [ ((x, y), isVisible (x, y)) | x <- [w0 .. w], y <- [h0 .. h] ]
   where
     heightBounds@((h0, w0), (h, w)) = A.bounds heightMap
 
     isVisible xy@(x, y)
-        | xy `U.inBounds` ((1, 1), (h - 1, w - 1))
-        -- = [fLeft' xy, fRight' xy, fDown' xy, fUp' xy]
-                                                   = any
+        | xy `U.inBounds` ((1, 1), (h - 1, w - 1)) = any
             (heightAt xy >)
-            [ fDown' (x - 1, y)
-            , fUp' (x + 1, y)
-            , fLeft' (x, y - 1)
-            , fRight' (x, y + 1)
+            [ f (x - 1, y)     (\(x, y) -> (x - 1, y)) (\(x, y) -> x == 0)
+            , f (x + 1, y)     (\(x, y) -> (x + 1, y)) (\(x, y) -> x == h)
+            , f (x    , y - 1) (\(x, y) -> (x, y - 1)) (\(x, y) -> y == 0)
+            , f (x    , y + 1) (\(x, y) -> (x, y + 1)) (\(x, y) -> y == w)
             ]
         | otherwise = True
 
-    fLeft'  = memo fLeft
-    fRight' = memo fRight
-    fUp'    = memo fUp
-    fDown'  = memo fDown
-
-    fLeft xy@(x, y) | y == 0    = heightAt (x, 0)
-                    | otherwise = max (heightAt (x, y)) $ fLeft' (x, y - 1)
-
-    fRight xy@(x, y)
-        | y == w    = heightAt (x, w)
-        | otherwise = max (heightAt (x, y)) $ fRight' (x, y + 1)
-
-    fUp xy@(x, y) | x == h    = heightAt (h, y)
-                  | otherwise = max (heightAt (x, y)) $ fUp' (x + 1, y)
-
-    fDown xy@(x, y) | x == 0    = heightAt (0, y)
-                    | otherwise = max (heightAt (x, y)) $ fDown' (x - 1, y)
+    f xy fn fe | fe xy     = heightAt xy
+               | otherwise = max (heightAt xy) $ f (fn xy) fn fe
 
     heightAt xy = heightMap A.! xy
 
