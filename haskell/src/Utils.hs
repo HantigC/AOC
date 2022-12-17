@@ -14,10 +14,13 @@ type GridBounds = ((Int, Int), (Int, Int))
 
 type Grid a = A.Array Coord a
 
-inBounds :: (Coord, Coord) -> Coord -> Bool
-inBounds ((sh, sw), (eh, ew)) (y, x) = sw <= x && x <= ew && sh <= y && y <= eh
+inBounds :: Coord -> (Coord, Coord) -> Bool
+inBounds (y, x) ((sh, sw), (eh, ew)) = sw <= x && x <= ew && sh <= y && y <= eh
 
 
+oefBounds :: (Coord, Coord) -> Coord -> Bool
+oefBounds ((sh, sw), (eh, ew)) (y, x) =
+  sw == x || x == ew || sh == y || y == eh
 readLines :: FilePath -> IO [String]
 readLines = fmap lines . readFile
 
@@ -61,7 +64,7 @@ squarePattern =
   ]
 
 computeNeighbCoords :: [Coord] -> Coord -> [Coord]
-computeNeighbCoords pattern (y, x) = map (bimap (+ y) (+ x)) pattern
+computeNeighbCoords p (y, x) = map (bimap (+ y) (+ x)) p
 
 
 
@@ -73,8 +76,8 @@ computeSquareNeighbCoords :: Coord -> [Coord]
 computeSquareNeighbCoords = computeNeighbCoords squarePattern
 
 getNeighbours :: [Coord] -> Coord -> A.Array Coord a -> [Coord]
-getNeighbours pattern coord@(y, x) arr =
-  filter (inBounds bounds) . computeNeighbCoords pattern $ coord
+getNeighbours p coord@(y, x) arr =
+  filter (`inBounds` bounds) . computeNeighbCoords p $ coord
   where bounds = A.bounds arr
 
 getCrossNeighbCoords :: Coord -> A.Array Coord a -> [Coord]

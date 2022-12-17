@@ -3,8 +3,15 @@ module Day07 where
 import           Data.Either                    ( fromRight )
 import           Data.List
 import           Data.Maybe
-import           Data.String                    ( IsString(fromString) )
-import           Text.ParserCombinators.Parsec
+import           Text.ParserCombinators.Parsec  ( (<|>)
+                                                , anyChar
+                                                , char
+                                                , digit
+                                                , many
+                                                , manyTill
+                                                , parse
+                                                , string
+                                                )
 import           Utils                          ( (==>)
                                                 , get2022Resources
                                                 )
@@ -149,7 +156,8 @@ example = intercalate
     , "4060174 j"
     , "8033020 d.log"
     , "5626152 d.ext"
-    , "7214296 k\n"
+    , "7214296 k"
+    , ""
     ]
 
 main = do
