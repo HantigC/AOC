@@ -1,4 +1,4 @@
-module Day10 where
+module Year2021.Day10 where
 import           Control.Monad                  ( foldM
                                                 , mapM
                                                 )

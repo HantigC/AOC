@@ -1,4 +1,4 @@
-module Day11 where
+module Year2022.Day11 where
 
 import Data.Either (fromRight)
 import Data.List (intercalate, sort)
@@ -77,7 +77,7 @@ parseOperator = do
     '-' -> Sub
     '+' -> Add
     '/' -> Div
-    otherwise -> error " should be +-/*"
+    _ -> error " should be +-/*"
 
 parseOperand :: GenParser Char st Operand
 parseOperand = do

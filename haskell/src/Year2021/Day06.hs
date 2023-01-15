@@ -1,4 +1,4 @@
-module Day06 where
+module Year2021.Day06 where
 import qualified Data.List                     as L
 import qualified Data.List.Split               as S
 import qualified Data.Map                      as M

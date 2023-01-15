@@ -1,4 +1,4 @@
-module Day03 where
+module Year2021.Day03 where
 import qualified Utils                         as U
 
 toBit :: Char -> Int

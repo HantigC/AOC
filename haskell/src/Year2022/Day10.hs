@@ -22,7 +22,7 @@ parseAddx = do
   P.optional $ P.char '\n'
   let negative = case minus of
         Nothing -> read number
-        _ -> - (read number)
+        Just _ -> - (read number)
 
   return $ Addx negative
 
@@ -103,5 +103,4 @@ main = do
   input <- readFile $ get2022Resources 10
   example <- readFile "./src/2022/day10.in"
   print $ partOne input
-  -- putStr $ partTwo example
   putStr $ partTwo input

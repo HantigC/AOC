@@ -1,4 +1,4 @@
-module Day07 where
+module Year2021.Day07 where
 import           Data.Map                       ( Map )
 import qualified Data.Map                      as M
 import qualified Utils                         as U

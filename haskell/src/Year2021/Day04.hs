@@ -1,4 +1,4 @@
-module Day04 where
+module Year2021.Day04 where
 
 import qualified Data.List.Split               as S
 import qualified Utils                         as U

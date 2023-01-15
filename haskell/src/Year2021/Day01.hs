@@ -1,4 +1,4 @@
-module Day01 where
+module Year2021.Day01 where
 
 import           Utils
 import qualified Utils                         as U
